@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codi de Colors de Resistors - FCB Edition</title>
+    <!-- Inclou Tailwind CSS per a un disseny modern i responsiu -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Definició de colors personalitzats inspirats en el FC Barcelona */
+        :root {
+            --blau-fcb: #004D98; /* Blau fosc */
+            --grana-fcb: #A50044; /* Grana fosc */
+            --groc-fcb: #FFDE00; /* Detall groc/daurat */
+        }
+        .bg-blau-fcb { background-color: var(--blau-fcb); }
+        .text-blau-fcb { color: var(--blau-fcb); }
+        .bg-grana-fcb { background-color: var(--grana-fcb); }
+        .text-grana-fcb { color: var(--grana-fcb); }
+        .border-grana-fcb { border-color: var(--grana-fcb); }
+        .shadow-fcb { box-shadow: 0 10px 15px -3px rgba(0, 77, 152, 0.5), 0 4px 6px -2px rgba(0, 77, 152, 0.25); }
+
+        /* Estils generals */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Un gris clar */
+        }
+        /* Estil per al resistor visual */
+        .resistor-body {
+            height: 40px;
+            width: 250px;
+            background-color: #d4d4d4;
+            border: 2px solid #555;
+            border-radius: 50% / 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin: 20px auto;
+        }
+        .resistor-lead {
+            width: 50px;
+            height: 3px;
+            background-color: #888;
+            position: absolute;
+        }
+        .resistor-lead.left { left: -50px; }
+        .resistor-lead.right { right: -50px; }
+
+        .band {
+            width: 15px;
+            height: 100%;
+            border-radius: 2px;
+            position: absolute;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+        }
+        .band-1 { left: 30px; }
+        .band-2 { left: 60px; }
+        .band-3 { left: 90px; }
+        .band-4 { right: 30px; } /* Més separada per tolerància */
+
+        /* Estil per a les pestanyes actives */
+        .tab-active {
+            color: white;
+            background-color: var(--grana-fcb);
+            border-bottom: 4px solid var(--groc-fcb);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8">
+    
+    <header class="bg-blau-fcb text-white p-6 rounded-t-xl shadow-fcb mb-6">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center uppercase tracking-wider">
+            Resistor <span class="text-grana-fcb">Color</span> Code
+        </h1>
+        <p class="text-center mt-1 text-sm sm:text-base opacity-90">Eina interactiva per a 4t ESO</p>
+    </header>
+
+    <div class="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-b-xl shadow-lg">
+        
+        <!-- Navegació per Pestanyes -->
+        <div class="flex flex-col sm:flex-row mb-6 border-b-2 border-blau-fcb">
+            <button id="tab-1" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('colors-to-value')">Colors a Valor</button>
+            <button id="tab-2" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('value-to-colors')">Valor a Colors</button>
+            <button id="tab-3" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('theory')">Teoria i Guia Visual</button>
+            <button id="tab-4" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('quiz-game')">Joc (Quiz)</button>
+        </div>
+
+        <!-- Contingut de l'Aplicació -->
+        <div id="content-container">
+
+            <!-- 1. Conversió de Colors a Valor -->
+            <div id="colors-to-value" class="tab-content space-y-6">
+                <h2 class="text-2xl font-bold text-blau-fcb border-b pb-2">1. Conversió de Colors a Valor Numèric</h2>
+                
+                <!-- Resistor Visual -->
+                <div class="flex items-center justify-center">
+                    <div class="resistor-container relative w-[350px]">
+                        <div class="resistor-lead left absolute top-1/2 -translate-y-1/2"></div>
+                        <div id="resistor-visual" class="resistor-body">
+                            <div id="band-1" class="band band-1" style="background-color: #808080;"></div>
+                            <div id="band-2" class="band band-2" style="background-color: #808080;"></div>
+                            <div id="band-3" class="band band-3" style="background-color: #808080;"></div>
+                            <div id="band-4" class="band band-4" style="background-color: #808080;"></div>
+                        </div>
+                        <div class="resistor-lead right absolute top-1/2 -translate-y-1/2"></div>
+                    </div>
+                </div>
+
+                <!-- Selectors de Colors -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="flex flex-col space-y-1">
+                        <label for="color1" class="font-semibold text-grana-fcb">Banda 1 (1a Xifra)</label>
+                        <select id="color1" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb" onchange="calculateResistance()">
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-1">
+                        <label for="color2" class="font-semibold text-grana-fcb">Banda 2 (2a Xifra)</label>
+                        <select id="color2" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb" onchange="calculateResistance()">
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-1">
+                        <label for="color3" class="font-semibold text-grana-fcb">Banda 3 (Multiplicador)</label>
+                        <select id="color3" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb" onchange="calculateResistance()">
+                        </select>
+                    </div>
+                    <div class="flex flex-col space-y-1">
+                        <label for="color4" class="font-semibold text-grana-fcb">Banda 4 (Tolerància)</label>
+                        <select id="color4" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb" onchange="calculateResistance()">
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="resetColorsToValue()" class="w-full bg-blau-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
+                    Reiniciar Colors
+                </button>
+
+                <!-- Resultats -->
+                <div class="p-4 border border-grana-fcb rounded-xl bg-grana-fcb/10 mt-6">
+                    <h3 class="text-xl font-bold text-grana-fcb mb-3">Resultat del Resistor</h3>
+                    <div id="results-panel" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
+                        <!-- Els resultats s'injectaran aquí -->
+                        <p><span class="font-semibold text-blau-fcb">Valor Nominal:</span> <span id="nominal-value"></span></p>
+                        <p><span class="font-semibold text-blau-fcb">Tolerància:</span> <span id="tolerance-percent"></span></p>
+                        <p><span class="font-semibold text-blau-fcb">Valor Mínim:</span> <span id="min-value"></span></p>
+                        <p><span class="font-semibold text-blau-fcb">Valor Màxim:</span> <span id="max-value"></span></p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 2. Conversió de Valor a Colors -->
+            <div id="value-to-colors" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold text-blau-fcb border-b pb-2">2. Conversió de Valor Numèric a Colors</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col space-y-1">
+                        <!-- S'utilitza l'entitat HTML &Omega; -->
+                        <label for="input-value" class="font-semibold text-grana-fcb">Valor Nominal (&Omega;)</label>
+                        <input type="number" id="input-value" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb" placeholder="Ex: 47000" min="1" step="any">
+                    </div>
+                    <div class="flex flex-col space-y-1">
+                        <label for="input-tolerance" class="font-semibold text-grana-fcb">Tolerància (%)</label>
+                        <select id="input-tolerance" class="p-2 border border-gray-300 rounded-lg focus:ring-grana-fcb focus:border-grana-fcb">
+                            <option value="">Selecciona Tolerància</option>
+                            <option value="1">1% (Marró)</option>
+                            <option value="2">2% (Vermell)</option>
+                            <option value="5">5% (Or)</option>
+                            <option value="10">10% (Plata)</option>
+                            <option value="20">20% (Sense Color)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="valueToColors()" class="w-full bg-blau-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
+                    Calcular Colors
+                </button>
+                <button onclick="resetValueToColors()" class="w-full bg-gray-400 text-white font-bold py-3 rounded-lg shadow-md hover:bg-gray-500 transition duration-200 mt-2">
+                    Netejar Camps
+                </button>
+
+
+                <!-- Resultat Colors -->
+                <div class="p-4 border border-grana-fcb rounded-xl bg-grana-fcb/10 mt-6">
+                    <h3 class="text-xl font-bold text-grana-fcb mb-3">Resistor Calculat</h3>
+                    <div id="resistor-visual-v2c" class="resistor-body mx-auto my-6 w-[350px]">
+                        <div class="resistor-lead left absolute top-1/2 -translate-y-1/2"></div>
+                        <div id="v2c-band-1" class="band band-1" style="background-color: #d4d4d4;"></div>
+                        <div id="v2c-band-2" class="band band-2" style="background-color: #d4d4d4;"></div>
+                        <div id="v2c-band-3" class="band band-3" style="background-color: #d4d4d4;"></div>
+                        <div id="v2c-band-4" class="band band-4" style="background-color: #d4d4d4;"></div>
+                        <div class="resistor-lead right absolute top-1/2 -translate-y-1/2"></div>
+                    </div>
+                    <div id="colors-result" class="text-center font-semibold text-gray-800">
+                        <!-- Els colors resultants s'injectaran aquí -->
+                    </div>
+                    <div id="v2c-error" class="text-red-600 font-semibold text-center mt-3 hidden"></div>
+                </div>
+
+            </div>
+
+            <!-- 3. Teoria i Guia Visual -->
+            <div id="theory" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold text-blau-fcb border-b pb-2">3. Teoria del Codi de Colors</h2>
+                
+                <p class="text-lg text-gray-700">El codi de colors és un mètode universal per indicar el valor nominal i la tolerància de la resistència elèctrica d'un resistor sense haver d'imprimir el valor directament sobre el cos. La majoria de resistors utilitzen un sistema de 4 bandes.</p>
+                
+                <!-- S'ha eliminat la Fòrmula Clau -->
+
+                <h3 class="text-xl font-bold text-blau-fcb mt-6">Guia Visual de Colors i Valors</h3>
+
+                <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-md">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-blau-fcb text-white uppercase text-xs sm:text-sm">
+                            <tr>
+                                <th class="px-3 py-3 text-left tracking-wider">Color</th>
+                                <th class="px-3 py-3 text-left tracking-wider">1a Xifra</th>
+                                <th class="px-3 py-3 text-left tracking-wider">2a Xifra</th>
+                                <th class="px-3 py-3 text-left tracking-wider">Multiplicador</th>
+                                <th class="px-3 py-3 text-left tracking-wider">Tolerància</th>
+                            </tr>
+                        </thead>
+                        <tbody id="theory-table-body" class="bg-white divide-y divide-gray-200 text-gray-700 text-sm">
+                            <!-- La taula es generarà amb JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            
+            <!-- 4. Joc (Quiz) -->
+            <div id="quiz-game" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold text-blau-fcb border-b pb-2">4. Posa a Prova els Teus Coneixements!</h2>
+                
+                <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-inner">
+                    <p class="text-lg font-semibold text-grana-fcb">Puntuació: <span id="quiz-score">0</span> / <span id="quiz-total">0</span></p>
+                    <button onclick="initGame()" class="bg-blau-fcb text-white font-semibold py-2 px-4 rounded-lg hover:bg-blau-fcb/80 transition duration-200 text-sm">Nova Partida</button>
+                </div>
+
+                <div class="p-4 border border-grana-fcb rounded-xl bg-grana-fcb/10 text-center">
+                    <p class="text-xl font-bold text-gray-800 mb-4">Quin és el valor nominal d'aquest resistor?</p>
+                    
+                    <!-- Resistor Visual del Joc -->
+                    <div class="flex items-center justify-center">
+                        <div class="resistor-container relative w-[350px]">
+                            <div class="resistor-lead left absolute top-1/2 -translate-y-1/2"></div>
+                            <div id="quiz-resistor-visual" class="resistor-body">
+                                <div id="quiz-band-1" class="band band-1" style="background-color: #d4d4d4;"></div>
+                                <div id="quiz-band-2" class="band band-2" style="background-color: #d4d4d4;"></div>
+                                <div id="quiz-band-3" class="band band-3" style="background-color: #d4d4d4;"></div>
+                                <div id="quiz-band-4" class="band band-4" style="background-color: #d4d4d4;"></div>
+                            </div>
+                            <div class="resistor-lead right absolute top-1/2 -translate-y-1/2"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <!-- LÍNIA CORREGIDA: S'utilitza l'entitat HTML &Omega; en lloc de la sintaxi de LaTeX $\Omega$ -->
+                        <label for="quiz-input" class="font-semibold text-blau-fcb block mb-2">Introdueix el valor en Ohms (&Omega;):</label>
+                        <input type="number" id="quiz-input" class="p-3 border border-gray-300 rounded-lg w-full max-w-sm mx-auto text-center text-lg focus:ring-grana-fcb focus:border-grana-fcb" placeholder="Ex: 47000" min="0" step="any">
+                    </div>
+                    
+                    <button onclick="checkAnswer()" class="mt-4 w-full max-w-sm bg-grana-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-grana-fcb/80 transition duration-200">
+                        Comprovar Resposta
+                    </button>
+
+                    <div id="quiz-feedback" class="mt-4 p-3 rounded-lg font-bold min-h-[40px] flex items-center justify-center">
+                        <!-- Missatges de feedback -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script principal de l'aplicació -->
+    <script>
+        // Taula de dades de colors amb els seus valors (utilitzant el català i els valors de la imatge)
+        const COLOR_CODES = [
+            { name: 'Negre', digit: 0, mult: 1, tolerance: null, hex: '#000000', cat: 'Negre' },
+            { name: 'Marró', digit: 1, mult: 10, tolerance: 1, hex: '#8B4513', cat: 'Marró' },
+            { name: 'Vermell', digit: 2, mult: 100, tolerance: 2, hex: '#FF0000', cat: 'Vermell' },
+            { name: 'Taronja', digit: 3, mult: 1000, tolerance: null, hex: '#FFA500', cat: 'Taronja' },
+            { name: 'Groc', digit: 4, mult: 10000, tolerance: null, hex: '#FFFF00', cat: 'Groc' },
+            { name: 'Verd', digit: 5, mult: 100000, tolerance: 0.5, hex: '#008000', cat: 'Verd' }, // Tolerància estàndard
+            { name: 'Blau', digit: 6, mult: 1000000, tolerance: 0.25, hex: '#0000FF', cat: 'Blau' }, // Tolerància estàndard
+            { name: 'Violeta', digit: 7, mult: 10000000, tolerance: 0.1, hex: '#EE82EE', cat: 'Violeta' }, // Completant amb valors estàndard
+            { name: 'Gris', digit: 8, mult: 100000000, tolerance: 0.05, hex: '#808080', cat: 'Gris' },
+            { name: 'Blanc', digit: 9, mult: 1000000000, tolerance: null, hex: '#FFFFFF', cat: 'Blanc' },
+            { name: 'Or', digit: null, mult: 0.1, tolerance: 5, hex: '#FFD700', cat: 'Or' },
+            { name: 'Plata', digit: null, mult: 0.01, tolerance: 10, hex: '#C0C0C0', cat: 'Plata' },
+            { name: 'Sense color', digit: null, mult: null, tolerance: 20, hex: 'transparent', cat: 'Sense color' }
+        ];
+
+        // Estat del joc
+        let gameState = {
+            score: 0,
+            total: 0,
+            currentNominalValue: 0, // Valor en Ohms (Ω)
+            currentBands: { c1: '', c2: '', c3: '', c4: '' }
+        };
+
+        // Funció d'utilitat per obtenir dades
+        const getColorData = (colorName) => COLOR_CODES.find(c => c.cat === colorName);
+        const getColorByDigit = (digit) => COLOR_CODES.find(c => c.digit === digit);
+        const getColorByTolerance = (tolerance) => COLOR_CODES.find(c => c.tolerance === tolerance);
+        
+        // Funció d'utilitat per formatar el valor de la resistència (Ω, kΩ, MΩ)
+        const formatter = (value) => {
+            // Utilitzem &Omega; (Ohm)
+            if (value >= 1e6) return (value / 1e6).toFixed(3).replace(/\.?0+$/, '') + ' M&Omega;';
+            if (value >= 1e3) return (value / 1e3).toFixed(3).replace(/\.?0+$/, '') + ' k&Omega;';
+            return value.toLocaleString('ca', { maximumFractionDigits: 3 }) + ' &Omega;';
+        };
+
+        // --- Setup Inicial ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            populateColorSelectors();
+            populateTheoryTable();
+            // Mostrar la primera pestanya per defecte
+            showTab('colors-to-value'); 
+            // Calcular amb els valors per defecte un cop carregat
+            calculateResistance(); 
+            // Inicialitzar el joc
+            initGame(false);
+        });
+
+        // Genera les opcions per als selectors de colors
+        function populateColorSelectors() {
+            const selector1 = document.getElementById('color1');
+            const selector2 = document.getElementById('color2');
+            const selector3 = document.getElementById('color3');
+            const selector4 = document.getElementById('color4');
+
+            // BANDA 1 (1a Xifra) - No pot ser Negre (0)
+            const band1_options = COLOR_CODES.filter(c => c.digit !== null && c.digit !== 0);
+            band1_options.forEach(c => {
+                const option = new Option(c.cat, c.cat);
+                selector1.add(option);
+            });
+            
+            // BANDA 2 (2a Xifra)
+            const band2_options = COLOR_CODES.filter(c => c.digit !== null);
+            band2_options.forEach(c => {
+                const option = new Option(c.cat, c.cat);
+                selector2.add(option);
+            });
+
+            // BANDA 3 (Multiplicador)
+            const band3_options = COLOR_CODES.filter(c => c.mult !== null);
+            band3_options.forEach(c => {
+                const option = new Option(`${c.cat} (x ${c.mult >= 1 ? c.mult.toLocaleString('ca') : c.mult})`, c.cat);
+                selector3.add(option);
+            });
+            
+            // BANDA 4 (Tolerància)
+            const band4_options = COLOR_CODES.filter(c => c.tolerance !== null);
+            band4_options.forEach(c => {
+                // S'elimina el símbol &plusmn;
+                const option = new Option(`${c.cat} (${c.tolerance}%)`, c.cat); 
+                selector4.add(option);
+            });
+
+            // Seleccionar valors per defecte inicials (Ex: Groc-Violeta-Vermell-Or = 4k7 ± 5%)
+            selector1.value = 'Groc';
+            selector2.value = 'Violeta';
+            selector3.value = 'Vermell';
+            selector4.value = 'Or';
+        }
+
+        // Genera la taula de teoria
+        function populateTheoryTable() {
+            const tbody = document.getElementById('theory-table-body');
+            tbody.innerHTML = '';
+
+            COLOR_CODES.forEach(c => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition duration-150';
+
+                // Determinar el color del fons per a la primera columna
+                let colorBg = c.hex;
+                let colorText = (c.hex === '#000000' || c.hex === '#8B4513' || c.hex === '#0000FF') ? 'white' : 'black';
+                if (c.cat === 'Sense color') {
+                    colorBg = '#f0f0f0';
+                    colorText = 'black';
+                }
+
+                row.innerHTML = `
+                    <td class="px-3 py-2 whitespace-nowrap font-medium flex items-center">
+                        <div class="w-4 h-4 rounded-full mr-2 border border-gray-400" style="background-color: ${colorBg};"></div>
+                        <span style="color: ${colorText}; text-shadow: 0 0 2px rgba(0,0,0,0.5);">${c.cat}</span>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap">${c.digit !== null ? c.digit : '-'}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${c.digit !== null ? c.digit : '-'}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${c.mult !== null ? (c.mult >= 1 ? c.mult.toLocaleString('ca') : c.mult) : '-'}</td>
+                    <td class="px-3 py-2 whitespace-nowrap">${c.tolerance !== null ? c.tolerance + '%' : '-'}</td> <!-- S'elimina &plusmn; -->
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // --- Funcionalitat 1: Colors a Valor (C2V) ---
+        
+        function calculateResistance() {
+            const c1 = document.getElementById('color1').value;
+            const c2 = document.getElementById('color2').value;
+            const c3 = document.getElementById('color3').value;
+            const c4 = document.getElementById('color4').value;
+
+            const d1 = getColorData(c1).digit;
+            const d2 = getColorData(c2).digit;
+            const mult = getColorData(c3).mult;
+            const tolerance = getColorData(c4).tolerance;
+
+            // Actualitzar el visualitzador del resistor
+            document.getElementById('band-1').style.backgroundColor = getColorData(c1).hex;
+            document.getElementById('band-2').style.backgroundColor = getColorData(c2).hex;
+            document.getElementById('band-3').style.backgroundColor = getColorData(c3).hex;
+            document.getElementById('band-4').style.backgroundColor = getColorData(c4).hex;
+
+            if (d1 === null || d2 === null || mult === null || tolerance === null) {
+                 // Això no hauria de passar amb els selectors ben definits
+                document.getElementById('nominal-value').textContent = 'Error: Selecció incompleta.';
+                return;
+            }
+
+            // Càlcul del valor nominal: R = (D1 * 10 + D2) * M
+            const nominalValue = (d1 * 10 + d2) * mult;
+            const toleranceFraction = tolerance / 100;
+            
+            // Càlcul dels valors mínim i màxim
+            const minValue = nominalValue * (1 - toleranceFraction);
+            const maxValue = nominalValue * (1 + toleranceFraction);
+
+            
+            document.getElementById('nominal-value').innerHTML = formatter(nominalValue);
+            document.getElementById('tolerance-percent').innerHTML = `${tolerance}% (${c4})`; 
+            document.getElementById('min-value').innerHTML = formatter(minValue);
+            document.getElementById('max-value').innerHTML = formatter(maxValue);
+        }
+
+        function resetColorsToValue() {
+            document.getElementById('color1').value = 'Groc';
+            document.getElementById('color2').value = 'Violeta';
+            document.getElementById('color3').value = 'Vermell';
+            document.getElementById('color4').value = 'Or';
+            calculateResistance();
+        }
+
+        // --- Funcionalitat 2: Valor a Colors (V2C) ---
+        
+        function valueToColors() {
+            const inputVal = document.getElementById('input-value').value;
+            const inputTol = document.getElementById('input-tolerance').value;
+            const errorDiv = document.getElementById('v2c-error');
+            const resultDiv = document.getElementById('colors-result');
+
+            errorDiv.classList.add('hidden');
+            resultDiv.innerHTML = '';
+            
+            // Netejar visualitzador
+            document.getElementById('v2c-band-1').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-2').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-3').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-4').style.backgroundColor = '#d4d4d4';
+
+            if (!inputVal || !inputTol) {
+                errorDiv.textContent = 'Si us plau, introdueix un valor nominal i selecciona una tolerància.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            let R = parseFloat(inputVal);
+            if (R <= 0 || isNaN(R)) {
+                errorDiv.textContent = 'El valor nominal ha de ser un nombre positiu.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // 1. Trobar el color de la tolerància
+            const tolColorData = getColorByTolerance(parseInt(inputTol));
+            const c4 = tolColorData.cat;
+
+            // 2. Trobar el Multiplicador
+            let multiplierColor = null;
+            let M = 1;
+
+            // Iterar sobre tots els multiplicadors (incloent Or/Plata)
+            const sortedMultipliers = COLOR_CODES.filter(c => c.mult !== null).sort((a, b) => b.mult - a.mult);
+
+            for (const c of sortedMultipliers) {
+                // El valor a codificar és el residu de dividir R pel multiplicador
+                const targetValue = R / c.mult;
+                
+                // El valor codificat (D1 * 10 + D2) ha d'estar entre 10 (Marró-Negre) i 99 (Blanc-Blanc)
+                if (targetValue >= 10 && targetValue <= 99.999) { 
+                    M = c.mult;
+                    multiplierColor = c.cat;
+                    break;
+                }
+            }
+
+            if (!multiplierColor) {
+                 // Utilitzem &Omega;
+                 errorDiv.textContent = `No és possible codificar el valor ${R.toLocaleString('ca')} &Omega; amb 4 bandes, o el valor és massa gran/petit per als multiplicadors disponibles.`;
+                 errorDiv.classList.remove('hidden');
+                 return;
+            }
+
+            // 3. Trobar els dos primers dígits
+            const nominalDigits = Math.round(R / M); // Valor entre 10 i 99
+            
+            const D1 = Math.floor(nominalDigits / 10);
+            const D2 = nominalDigits % 10;
+            
+            const c1 = getColorByDigit(D1).cat;
+            const c2 = getColorByDigit(D2).cat;
+
+            // 4. Mostrar Resultat
+            document.getElementById('v2c-band-1').style.backgroundColor = getColorData(c1).hex;
+            document.getElementById('v2c-band-2').style.backgroundColor = getColorData(c2).hex;
+            document.getElementById('v2c-band-3').style.backgroundColor = getColorData(multiplierColor).hex;
+            document.getElementById('v2c-band-4').style.backgroundColor = tolColorData.hex;
+
+            resultDiv.innerHTML = `
+                <p class="mt-4 text-xl">Colors Resultants:</p>
+                <p class="mt-2 font-extrabold text-2xl text-grana-fcb">
+                    ${c1} - ${c2} - ${multiplierColor} - ${c4}
+                </p>
+                <!-- S'elimina el símbol &plusmn; -->
+                <p class="text-sm text-gray-500 mt-2">(Valor codificat: ${(D1 * 10 + D2) * M} &Omega; ${inputTol}%)</p>
+            `;
+        }
+        
+        function resetValueToColors() {
+            document.getElementById('input-value').value = '';
+            document.getElementById('input-tolerance').value = '';
+            document.getElementById('v2c-error').classList.add('hidden');
+            document.getElementById('colors-result').innerHTML = '';
+             document.getElementById('v2c-band-1').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-2').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-3').style.backgroundColor = '#d4d4d4';
+            document.getElementById('v2c-band-4').style.backgroundColor = '#d4d4d4';
+        }
+
+
+        // --- Funcionalitat 4: Joc (Quiz) ---
+        
+        function initGame(resetScore = true) {
+            if (resetScore) {
+                gameState.score = 0;
+                gameState.total = 0;
+            }
+            document.getElementById('quiz-score').textContent = gameState.score;
+            document.getElementById('quiz-total').textContent = gameState.total;
+            document.getElementById('quiz-feedback').innerHTML = '';
+            document.getElementById('quiz-feedback').className = 'mt-4 p-3 rounded-lg font-bold min-h-[40px] flex items-center justify-center';
+            document.getElementById('quiz-input').value = '';
+
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            // Colors disponibles per a cada banda
+            const d1_colors = COLOR_CODES.filter(c => c.digit !== null && c.digit !== 0);
+            const d2_colors = COLOR_CODES.filter(c => c.digit !== null);
+            const mult_colors = COLOR_CODES.filter(c => c.mult !== null && c.mult >= 1); // Evitem Or/Plata com a Multiplicador per simplificar el rang de valors (sense decimals)
+            const tol_colors = COLOR_CODES.filter(c => c.tolerance !== null);
+
+            // Selecció aleatòria (Nombres enters per als índexs)
+            const c1_data = d1_colors[Math.floor(Math.random() * d1_colors.length)];
+            const c2_data = d2_colors[Math.floor(Math.random() * d2_colors.length)];
+            const c3_data = mult_colors[Math.floor(Math.random() * mult_colors.length)];
+            const c4_data = tol_colors[Math.floor(Math.random() * tol_colors.length)];
+
+            // Càlcul del valor nominal correcte
+            const nominalValue = (c1_data.digit * 10 + c2_data.digit) * c3_data.mult;
+
+            // Actualitzar l'estat
+            gameState.currentNominalValue = nominalValue;
+            gameState.currentBands.c1 = c1_data.cat;
+            gameState.currentBands.c2 = c2_data.cat;
+            gameState.currentBands.c3 = c3_data.cat;
+            gameState.currentBands.c4 = c4_data.cat;
+
+            // Actualitzar el visualitzador del quiz
+            document.getElementById('quiz-band-1').style.backgroundColor = c1_data.hex;
+            document.getElementById('quiz-band-2').style.backgroundColor = c2_data.hex;
+            document.getElementById('quiz-band-3').style.backgroundColor = c3_data.hex;
+            document.getElementById('quiz-band-4').style.backgroundColor = c4_data.hex;
+
+            // Netejar l'entrada i el feedback
+            document.getElementById('quiz-input').value = '';
+        }
+
+        function checkAnswer() {
+            const userInput = parseFloat(document.getElementById('quiz-input').value);
+            const feedbackDiv = document.getElementById('quiz-feedback');
+            const correctValue = gameState.currentNominalValue;
+            const c4 = gameState.currentBands.c4;
+            const bands = `${gameState.currentBands.c1} - ${gameState.currentBands.c2} - ${gameState.currentBands.c3} - ${c4}`;
+            
+            gameState.total++;
+
+            if (isNaN(userInput) || userInput <= 0) {
+                feedbackDiv.className = 'mt-4 p-3 rounded-lg font-bold bg-yellow-200 text-yellow-800';
+                feedbackDiv.textContent = 'Introdueix un valor numèric vàlid!';
+                gameState.total--; // No comptem com a pregunta
+                return;
+            }
+
+            // Comprovar si la resposta és correcta (margen petit per errors de coma flotant)
+            const isCorrect = Math.abs(userInput - correctValue) < 0.001;
+
+            if (isCorrect) {
+                gameState.score++;
+                feedbackDiv.className = 'mt-4 p-3 rounded-lg font-bold bg-green-200 text-green-800';
+                feedbackDiv.innerHTML = `✅ **Correcte!** El valor és <strong>${formatter(correctValue)}</strong> amb una tolerància de ${getColorData(c4).tolerance}%.`;
+            } else {
+                feedbackDiv.className = 'mt-4 p-3 rounded-lg font-bold bg-red-200 text-red-800';
+                // El formatter ja inclou &Omega; i no s'utilitza Markdown bolding al voltant del valor
+                feedbackDiv.innerHTML = `❌ **Incorrecte.** El valor nominal és ${formatter(correctValue)}. Els colors són: ${bands}.`;
+            }
+
+            // Actualitzar puntuació i generar la següent pregunta després d'un petit retard
+            document.getElementById('quiz-score').textContent = gameState.score;
+            document.getElementById('quiz-total').textContent = gameState.total;
+
+            setTimeout(generateQuestion, 2500); // Espera 2.5s abans de la següent pregunta
+        }
+
+
+        // --- Funcionalitat de Pestanyes ---
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('tab-active');
+                button.classList.add('bg-gray-200', 'text-gray-700');
+            });
+
+            let activeTabButtonId;
+            if(tabId === 'colors-to-value') activeTabButtonId = 'tab-1';
+            else if(tabId === 'value-to-colors') activeTabButtonId = 'tab-2';
+            else if(tabId === 'theory') activeTabButtonId = 'tab-3';
+            else if(tabId === 'quiz-game') {
+                activeTabButtonId = 'tab-4';
+                // Quan es selecciona la pestanya del joc, l'inicialitzem
+                initGame(false); // No resetegem la puntuació si només es canvia de pestanya
+            }
+
+            document.getElementById(activeTabButtonId).classList.add('tab-active');
+            document.getElementById(activeTabButtonId).classList.remove('bg-gray-200', 'text-gray-700');
+        }
+        
+    </script>
+</body>
+</html>
