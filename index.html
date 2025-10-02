@@ -71,7 +71,7 @@
 </head>
 <body class="min-h-screen p-4 sm:p-8">
     
-    <header class="bg-blau-fcb text-white p-6 rounded-t-xl shadow-fcb mb-6">
+    <header class="bg-blau-fcb text-black p-6 rounded-t-xl shadow-fcb mb-6">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-center uppercase tracking-wider">
             Resistor <span class="text-grana-fcb">Color</span> Code
         </h1>
@@ -82,10 +82,10 @@
         
         <!-- Navegació per Pestanyes -->
         <div class="flex flex-col sm:flex-row mb-6 border-b-2 border-blau-fcb">
-            <button id="tab-1" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('colors-to-value')">Colors a Valor</button>
-            <button id="tab-2" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('value-to-colors')">Valor a Colors</button>
-            <button id="tab-3" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('theory')">Teoria i Guia Visual</button>
-            <button id="tab-4" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-white" onclick="showTab('quiz-game')">Joc (Quiz)</button>
+            <button id="tab-1" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-black" onclick="showTab('colors-to-value')">Colors a Valor</button>
+            <button id="tab-2" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-black" onclick="showTab('value-to-colors')">Valor a Colors</button>
+            <button id="tab-3" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-black" onclick="showTab('theory')">Teoria i Guia Visual</button>
+            <button id="tab-4" class="tab-button p-3 sm:px-6 sm:py-3 text-lg font-semibold rounded-t-lg transition duration-200 hover:bg-grana-fcb/80 hover:text-black" onclick="showTab('quiz-game')">Joc (Quiz)</button>
         </div>
 
         <!-- Contingut de l'Aplicació -->
@@ -133,7 +133,7 @@
                     </div>
                 </div>
                 
-                <button onclick="resetColorsToValue()" class="w-full bg-blau-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
+                <button onclick="resetColorsToValue()" class="w-full bg-blau-fcb text-black font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
                     Reiniciar Colors
                 </button>
 
@@ -174,10 +174,10 @@
                     </div>
                 </div>
                 
-                <button onclick="valueToColors()" class="w-full bg-blau-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
+                <button onclick="valueToColors()" class="w-full bg-blau-fcb text-black font-bold py-3 rounded-lg shadow-md hover:bg-blau-fcb/90 transition duration-200">
                     Calcular Colors
                 </button>
-                <button onclick="resetValueToColors()" class="w-full bg-gray-400 text-white font-bold py-3 rounded-lg shadow-md hover:bg-gray-500 transition duration-200 mt-2">
+                <button onclick="resetValueToColors()" class="w-full bg-gray-400 text-black font-bold py-3 rounded-lg shadow-md hover:bg-gray-500 transition duration-200 mt-2">
                     Netejar Camps
                 </button>
 
@@ -213,7 +213,7 @@
 
                 <div class="overflow-x-auto rounded-xl border border-gray-300 shadow-md">
                     <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-blau-fcb text-white uppercase text-xs sm:text-sm">
+                        <thead class="bg-blau-fcb text-black uppercase text-xs sm:text-sm">
                             <tr>
                                 <th class="px-3 py-3 text-left tracking-wider">Color</th>
                                 <th class="px-3 py-3 text-left tracking-wider">1a Xifra</th>
@@ -236,7 +236,7 @@
                 
                 <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg shadow-inner">
                     <p class="text-lg font-semibold text-grana-fcb">Puntuació: <span id="quiz-score">0</span> / <span id="quiz-total">0</span></p>
-                    <button onclick="initGame()" class="bg-blau-fcb text-white font-semibold py-2 px-4 rounded-lg hover:bg-blau-fcb/80 transition duration-200 text-sm">Nova Partida</button>
+                    <button onclick="initGame()" class="bg-blau-fcb text-black font-semibold py-2 px-4 rounded-lg hover:bg-blau-fcb/80 transition duration-200 text-sm">Nova Partida</button>
                 </div>
 
                 <div class="p-4 border border-grana-fcb rounded-xl bg-grana-fcb/10 text-center">
@@ -262,7 +262,7 @@
                         <input type="number" id="quiz-input" class="p-3 border border-gray-300 rounded-lg w-full max-w-sm mx-auto text-center text-lg focus:ring-grana-fcb focus:border-grana-fcb" placeholder="Ex: 47000" min="0" step="any">
                     </div>
                     
-                    <button onclick="checkAnswer()" class="mt-4 w-full max-w-sm bg-grana-fcb text-white font-bold py-3 rounded-lg shadow-md hover:bg-grana-fcb/80 transition duration-200">
+                    <button onclick="checkAnswer()" class="mt-4 w-full max-w-sm bg-grana-fcb text-black font-bold py-3 rounded-lg shadow-md hover:bg-grana-fcb/80 transition duration-200">
                         Comprovar Resposta
                     </button>
 
