@@ -24,7 +24,7 @@
         /* Estils generals */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Un gris clar */
+            background-color: #f0ff8; /* Un gris clar */
         }
         /* Estil per al resistor visual */
         .resistor-body {
@@ -69,7 +69,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-4 sm:p-8">
+<body class="min-h-screen p-4 sm:p-8 flex flex-col">
     
     <header class="bg-blau-fcb text-black p-6 rounded-t-xl shadow-fcb mb-6">
         <h1 class="text-3xl sm:text-4xl font-extrabold text-center uppercase tracking-wider">
@@ -78,7 +78,7 @@
         <p class="text-center mt-1 text-sm sm:text-base opacity-90">Eina interactiva per a 4t ESO</p>
     </header>
 
-    <div class="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-b-xl shadow-lg">
+    <div class="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-b-xl shadow-lg flex-grow">
         
         <!-- Navegació per Pestanyes -->
         <div class="flex flex-col sm:flex-row mb-6 border-b-2 border-blau-fcb">
@@ -257,7 +257,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <!-- LÍNIA CORREGIDA: S'utilitza l'entitat HTML &Omega; en lloc de la sintaxi de LaTeX $\Omega$ -->
+                        <!-- S'utilitza l'entitat HTML &Omega; -->
                         <label for="quiz-input" class="font-semibold text-blau-fcb block mb-2">Introdueix el valor en Ohms (&Omega;):</label>
                         <input type="number" id="quiz-input" class="p-3 border border-gray-300 rounded-lg w-full max-w-sm mx-auto text-center text-lg focus:ring-grana-fcb focus:border-grana-fcb" placeholder="Ex: 47000" min="0" step="any">
                     </div>
@@ -276,6 +276,12 @@
         </div>
 
     </div>
+    
+    <!-- Peu de Pàgina (Footer) afegit - S'ha traduït i s'ha posat text clar sobre fons fosc per a la visibilitat -->
+    <footer class="mt-8 p-4 text-center bg-blau-fcb/80 text-gray-100 rounded-b-xl shadow-lg">
+        <p class="text-sm">Esta web ha sido ideada por <span class="font-bold text-black">Gerard Horcas</span>.</p>
+        <p class="text-xs opacity-75 mt-1">Herramienta de aprendizaje de código de colores de resistencias.</p>
+    </footer>
 
     <!-- Script principal de l'aplicació -->
     <script>
